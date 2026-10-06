@@ -1,0 +1,56 @@
+{% extends "conges/base.html" %}
+{% block title %}Demandes de congé{% endblock %}
+
+{% block content %}
+<h1>Demandes de congé</h1>
+
+<div class="filtres carte">
+    <form method="get">
+        <p>
+            <label for="employe">Employé</label>
+            <select name="employe" id="employe">
+                <option value="">Tous</option>
+                {% for e in employes %}
+                <option value="{{ e.pk }}" {% if employe_filtre == e.pk|stringformat:"s" %}selected{% endif %}>{{ e.nom_prenoms }}</option>
+                {% endfor %}
+            </select>
+        </p>
+        <p>
+            <label for="statut">Statut</label>
+            <select name="statut" id="statut">
+                <option value="">Tous</option>
+                {% for value, label in statut_choices %}
+                <option value="{{ value }}" {% if statut_filtre == value %}selected{% endif %}>{{ label }}</option>
+                {% endfor %}
+            </select>
+        </p>
+        <p><button type="submit" class="btn secondaire">Filtrer</button></p>
+    </form>
+</div>
+
+<div class="actions" style="margin-bottom:18px;">
+    <a class="btn" href="{% url 'conges:demande-create' %}">+ Nouvelle demande</a>
+</div>
+
+<div class="table-wrap">
+<table>
+    <thead>
+        <tr><th>Employé</th><th>Départ</th><th>Durée</th><th>Reprise</th><th>Statut</th><th></th></tr>
+    </thead>
+    <tbody>
+        {% for demande in demandes %}
+        <tr>
+            <td><a href="{{ demande.employe.get_absolute_url }}">{{ demande.employe.nom_prenoms }}</a></td>
+            <td><a href="{{ demande.get_absolute_url }}">{{ demande.date_depart|date:"d/m/Y" }}</a></td>
+            <td>{{ demande.duree_conge }} j</td>
+            <td>{{ demande.date_reprise|date:"d/m/Y"|default:"—" }}</td>
+            <td><span class="badge badge-{{ demande.statut }}">{{ demande.get_statut_display }}</span></td>
+            <td><a href="{{ demande.get_absolute_url }}">détail →</a></td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="6">Aucune demande trouvée.</td></tr>
+        {% endfor %}
+    </tbody>
+</table>
+</div>
+{% endblock %}

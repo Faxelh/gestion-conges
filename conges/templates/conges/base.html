@@ -1,0 +1,38 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>{% block title %}Gestion des congés{% endblock %}</title>
+<link rel="stylesheet" href="{% static 'conges/style.css' %}">
+</head>
+<body>
+<header class="topbar no-print">
+    <div class="topbar-inner">
+        <a class="brand" href="{% url 'conges:simulateur' %}">🗓️ Gestion des congés</a>
+        <nav>
+            <a href="{% url 'conges:simulateur' %}">Simulateur</a>
+            <a href="{% url 'conges:employe-list' %}">Employés</a>
+            <a href="{% url 'conges:demande-list' %}">Demandes</a>
+            <a href="{% url 'conges:demande-create' %}" class="btn-nav">+ Nouvelle demande</a>
+        </nav>
+    </div>
+</header>
+
+<main class="container">
+    {% if messages %}
+        <ul class="messages no-print">
+            {% for message in messages %}
+                <li class="message {{ message.tags }}">{{ message }}</li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+    {% block content %}{% endblock %}
+</main>
+
+<footer class="footer no-print">
+    <p>Application locale de calcul des congés — règle par défaut : 2,2 jours ouvrables/mois.</p>
+</footer>
+</body>
+</html>

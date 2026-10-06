@@ -1,0 +1,55 @@
+{% extends "conges/base.html" %}
+{% block title %}{% if object %}Modifier la demande{% else %}Nouvelle demande{% endif %}{% endblock %}
+
+{% block content %}
+<h1>{% if object %}Modifier la demande{% else %}Nouvelle demande de congé{% endif %}</h1>
+
+<div class="carte">
+<form method="post" id="form-demande">
+    {% csrf_token %}
+    {% if form.non_field_errors %}<ul class="errorlist">{{ form.non_field_errors }}</ul>{% endif %}
+    {% for field in form %}
+        <p>
+            <label for="{{ field.id_for_label }}">{{ field.label }}{% if field.field.required %} *{% endif %}</label>
+            {{ field }}
+            {% if field.help_text %}<div class="helptext">{{ field.help_text }}</div>{% endif %}
+            {{ field.errors }}
+        </p>
+    {% endfor %}
+    <div class="actions">
+        <button type="submit" class="btn">Enregistrer</button>
+        <a class="btn secondaire" href="{% url 'conges:demande-list' %}">Annuler</a>
+    </div>
+</form>
+</div>
+
+<script>
+// Calcule automatiquement la date de reprise dès que la date de départ
+// et la durée sont renseignées (modifiable ensuite à la main si besoin).
+(function () {
+    var depart = document.getElementById('{{ form.date_depart.id_for_label }}');
+    var duree = document.getElementById('{{ form.duree_conge.id_for_label }}');
+    var reprise = document.getElementById('{{ form.date_reprise.id_for_label }}');
+    var repriseModifieeManuel = false;
+
+    if (reprise) {
+        reprise.addEventListener('input', function () { repriseModifieeManuel = true; });
+    }
+
+    function recalculer() {
+        if (repriseModifieeManuel) return;
+        if (!depart || !duree || !reprise) return;
+        if (!depart.value || !duree.value) return;
+        var d = new Date(depart.value + 'T00:00:00');
+        var n = parseInt(duree.value, 10);
+        if (isNaN(n) || n <= 0) return;
+        d.setDate(d.getDate() + n);
+        var iso = d.toISOString().slice(0, 10);
+        reprise.value = iso;
+    }
+
+    if (depart) depart.addEventListener('change', recalculer);
+    if (duree) duree.addEventListener('input', recalculer);
+})();
+</script>
+{% endblock %}

@@ -1,0 +1,42 @@
+{% extends "conges/base.html" %}
+{% block title %}Simulateur de date de retour{% endblock %}
+
+{% block content %}
+<h1>Simulateur de congé</h1>
+<p class="subtitle">Entre ta date de départ et le nombre de jours souhaités : l'appli calcule ta date de retour.</p>
+
+<div class="carte">
+    <form method="get">
+        <p>
+            <label for="{{ form.date_depart.id_for_label }}">{{ form.date_depart.label }}</label>
+            {{ form.date_depart }}
+            {% for error in form.date_depart.errors %}<ul class="errorlist"><li>{{ error }}</li></ul>{% endfor %}
+        </p>
+        <p>
+            <label for="{{ form.duree_conge.id_for_label }}">{{ form.duree_conge.label }}</label>
+            {{ form.duree_conge }}
+            <div class="helptext">{{ form.duree_conge.help_text }}</div>
+            {% for error in form.duree_conge.errors %}<ul class="errorlist"><li>{{ error }}</li></ul>{% endfor %}
+        </p>
+        <button type="submit" class="btn">Calculer ma date de retour</button>
+    </form>
+
+    {% if date_retour %}
+    <div class="resultat-simulateur">
+        <div>Départ le <strong>{{ depart|date:"l d F Y" }}</strong> pour <strong>{{ duree }} jour{{ duree|pluralize }}</strong></div>
+        <div style="margin-top:10px;">Date de reprise du travail :</div>
+        <div class="date-retour">{{ date_retour|date:"d/m/Y" }}</div>
+        <div class="helptext">({{ jour_retour }} {{ date_retour|date:"d F Y" }})</div>
+    </div>
+    {% endif %}
+</div>
+
+<div class="carte">
+    <h2 style="margin-top:0;">Aller plus loin</h2>
+    <p>Pour suivre ton solde réel de congés acquis (2,2 jours/mois) et enregistrer tes demandes officielles, gère tes fiches employé :</p>
+    <div class="actions">
+        <a class="btn secondaire" href="{% url 'conges:employe-list' %}">Voir les employés</a>
+        <a class="btn secondaire" href="{% url 'conges:demande-create' %}">Créer une demande de congé</a>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,28 @@
+databases:
+  - name: gestion-conges-db
+    plan: free
+    databaseName: gestion_conges
+    user: gestion_conges
+
+services:
+  - type: web
+    name: gestion-conges
+    runtime: python
+    plan: free
+    buildCommand: "./build.sh"
+    startCommand: "gunicorn conges_project.wsgi:application"
+    envVars:
+      - key: SECRET_KEY
+        generateValue: true
+      - key: DEBUG
+        value: "False"
+      - key: PYTHON_VERSION
+        value: "3.12.0"
+      - key: ALLOWED_HOSTS
+        value: "elara.kounandi.org"
+      - key: CSRF_TRUSTED_ORIGINS
+        value: "https://elara.kounandi.org"
+      - key: DATABASE_URL
+        fromDatabase:
+          name: gestion-conges-db
+          property: connectionString

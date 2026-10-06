@@ -1,0 +1,42 @@
+{% extends "conges/base.html" %}
+{% block title %}Employés{% endblock %}
+
+{% block content %}
+<h1>Employés</h1>
+<p class="subtitle">Solde de congés calculé automatiquement pour chacun.</p>
+
+<div class="actions" style="margin-bottom:18px;">
+    <a class="btn" href="{% url 'conges:employe-create' %}">+ Ajouter un employé</a>
+</div>
+
+<div class="table-wrap">
+<table>
+    <thead>
+        <tr>
+            <th>Nom &amp; prénoms</th>
+            <th>Fonction</th>
+            <th>Mois de service</th>
+            <th>Droits acquis</th>
+            <th>Jours pris</th>
+            <th>Solde</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for ligne in lignes %}
+        <tr>
+            <td><a href="{{ ligne.employe.get_absolute_url }}">{{ ligne.employe.nom_prenoms }}</a></td>
+            <td>{{ ligne.employe.fonction|default:"—" }}</td>
+            <td>{{ ligne.mois_service }}</td>
+            <td>{{ ligne.droits_acquis }} j</td>
+            <td>{{ ligne.jours_pris }} j</td>
+            <td{% if ligne.solde < 0 %} style="color:#b3261e;font-weight:700;"{% endif %}>{{ ligne.solde }} j</td>
+            <td><a href="{{ ligne.employe.get_absolute_url }}">détail →</a></td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="7">Aucun employé enregistré pour le moment.</td></tr>
+        {% endfor %}
+    </tbody>
+</table>
+</div>
+{% endblock %}

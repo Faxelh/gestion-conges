@@ -1,0 +1,16 @@
+{% extends "conges/base.html" %}
+{% block title %}Confirmer la suppression{% endblock %}
+
+{% block content %}
+<h1>Confirmer la suppression</h1>
+<div class="carte">
+    <p>Es-tu sûr(e) de vouloir supprimer <strong>{{ object }}</strong> ? Cette action est irréversible.</p>
+    <form method="post">
+        {% csrf_token %}
+        <div class="actions">
+            <button type="submit" class="btn danger">Oui, supprimer</button>
+            <a class="btn secondaire" href="{{ view.success_url }}">Annuler</a>
+        </div>
+    </form>
+</div>
+{% endblock %}

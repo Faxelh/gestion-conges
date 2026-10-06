@@ -1,0 +1,60 @@
+{% extends "conges/base.html" %}
+{% block title %}{{ employe.nom_prenoms }}{% endblock %}
+
+{% block content %}
+<h1>{{ employe.nom_prenoms }}</h1>
+<p class="subtitle">
+    {{ employe.fonction|default:"—" }}{% if employe.direction %} · {{ employe.direction }}{% endif %}
+    · Embauché(e) le {{ employe.date_embauche|date:"d/m/Y" }}
+</p>
+
+<div class="grille-stats">
+    <div class="stat">
+        <div class="valeur">{{ mois_service }}</div>
+        <div class="label">Mois de service</div>
+    </div>
+    <div class="stat">
+        <div class="valeur">{{ droits_acquis }}</div>
+        <div class="label">Jours acquis ({{ employe.droit_jours_par_mois }} j/mois)</div>
+    </div>
+    <div class="stat">
+        <div class="valeur">{{ jours_pris }}</div>
+        <div class="label">Jours déjà pris</div>
+    </div>
+    <div class="stat {% if solde < 0 %}solde-negatif{% endif %}">
+        <div class="valeur">{{ solde }}</div>
+        <div class="label">Solde disponible</div>
+    </div>
+</div>
+{% if jours_planifies %}
+<p class="helptext">+ {{ jours_planifies }} jour{{ jours_planifies|pluralize }} en attente de validation (non déduit du solde ci-dessus).</p>
+{% endif %}
+
+<div class="actions">
+    <a class="btn" href="{% url 'conges:demande-create' %}?employe={{ employe.pk }}">+ Nouvelle demande pour {{ employe.nom_prenoms }}</a>
+    <a class="btn secondaire" href="{% url 'conges:employe-update' employe.pk %}">Modifier la fiche</a>
+    <a class="btn danger" href="{% url 'conges:employe-delete' employe.pk %}">Supprimer</a>
+</div>
+
+<h2>Historique des demandes</h2>
+<div class="table-wrap">
+<table>
+    <thead>
+        <tr><th>Départ</th><th>Durée</th><th>Reprise</th><th>Statut</th><th></th></tr>
+    </thead>
+    <tbody>
+        {% for demande in demandes %}
+        <tr>
+            <td><a href="{{ demande.get_absolute_url }}">{{ demande.date_depart|date:"d/m/Y" }}</a></td>
+            <td>{{ demande.duree_conge }} j</td>
+            <td>{{ demande.date_reprise|date:"d/m/Y"|default:"—" }}</td>
+            <td><span class="badge badge-{{ demande.statut }}">{{ demande.get_statut_display }}</span></td>
+            <td><a href="{{ demande.get_absolute_url }}">détail →</a></td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="5">Aucune demande enregistrée.</td></tr>
+        {% endfor %}
+    </tbody>
+</table>
+</div>
+{% endblock %}

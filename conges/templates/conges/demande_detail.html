@@ -1,0 +1,55 @@
+{% extends "conges/base.html" %}
+{% block title %}Demande de {{ demande.employe.nom_prenoms }}{% endblock %}
+
+{% block content %}
+<div class="actions no-print">
+    <a class="btn secondaire" href="{% url 'conges:demande-update' demande.pk %}">Modifier</a>
+    <a class="btn danger" href="{% url 'conges:demande-delete' demande.pk %}">Supprimer</a>
+    <button class="btn secondaire" onclick="window.print()">🖨️ Imprimer</button>
+    {% if demande.statut != 'validee' %}
+    <a class="btn" href="{% url 'conges:demande-statut' demande.pk 'validee' %}">Valider</a>
+    {% endif %}
+    {% if demande.statut != 'refusee' %}
+    <a class="btn danger" href="{% url 'conges:demande-statut' demande.pk 'refusee' %}">Refuser</a>
+    {% endif %}
+    {% if demande.statut != 'attente' %}
+    <a class="btn secondaire" href="{% url 'conges:demande-statut' demande.pk 'attente' %}">Remettre en attente</a>
+    {% endif %}
+</div>
+
+<div class="carte fiche-imprimable">
+    <h1>Demande de départ en congé annuel</h1>
+
+    <div class="champ"><div class="intitule">Nom &amp; prénoms</div><div>{{ demande.employe.nom_prenoms }}</div></div>
+    <div class="champ"><div class="intitule">Fonction</div><div>{{ demande.employe.fonction|default:"—" }}</div></div>
+    <div class="champ"><div class="intitule">Direction</div><div>{{ demande.employe.direction|default:"—" }}</div></div>
+    <div class="champ"><div class="intitule">Date de retour dernier congé</div><div>{{ demande.date_retour_dernier_conge|date:"d/m/Y"|default:"—" }}</div></div>
+    <div class="champ"><div class="intitule">Date de départ</div><div>{{ demande.date_depart|date:"d/m/Y" }}</div></div>
+    <div class="champ"><div class="intitule">Durée du congé</div><div>{{ demande.duree_conge }} jour{{ demande.duree_conge|pluralize }}</div></div>
+    <div class="champ"><div class="intitule">Date de reprise</div><div>{{ demande.date_reprise|date:"d/m/Y"|default:"—" }}</div></div>
+    <div class="champ"><div class="intitule">Contact(s)</div><div>{{ demande.contact|default:"—" }}</div></div>
+    <div class="champ"><div class="intitule">Avis du chef hiérarchique</div><div>{{ demande.get_avis_chef_display|default:"—" }}</div></div>
+    <div class="champ"><div class="intitule">Statut</div><div><span class="badge badge-{{ demande.statut }}">{{ demande.get_statut_display }}</span></div></div>
+    {% if demande.commentaire %}
+    <div class="champ"><div class="intitule">Commentaire</div><div>{{ demande.commentaire }}</div></div>
+    {% endif %}
+</div>
+
+<div class="carte no-print">
+    <h2 style="margin-top:0;">Situation de {{ demande.employe.nom_prenoms }} à la date de départ</h2>
+    <div class="grille-stats">
+        <div class="stat">
+            <div class="valeur">{{ demande.employe.droits_acquis }}</div>
+            <div class="label">Jours acquis (à aujourd'hui)</div>
+        </div>
+        <div class="stat">
+            <div class="valeur">{{ demande.employe.jours_pris }}</div>
+            <div class="label">Jours déjà pris</div>
+        </div>
+        <div class="stat {% if demande.employe.solde < 0 %}solde-negatif{% endif %}">
+            <div class="valeur">{{ demande.employe.solde }}</div>
+            <div class="label">Solde</div>
+        </div>
+    </div>
+</div>
+{% endblock %}
